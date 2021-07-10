@@ -3,11 +3,10 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from django.urls import reverse_lazy
+from django.contrib.auth import login
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import login
-
 from .models import Task
 
 class CustomLoginView(LoginView):
@@ -15,7 +14,7 @@ class CustomLoginView(LoginView):
     fields = '__all__'
     redirect_authenticated_user = True
 
-    def  get_success_url(self): return reverse_lazy('tasks')
+    def get_success_url(self): return reverse_lazy('tasks')
 
 class RegisterPage(FormView):
     template_name = 'base/register.html'
@@ -45,8 +44,14 @@ class Tasklist(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context['tasks'] = context['tasks'].filter(user=self.request.user)
         context['count'] = context['tasks'].filter(complete=False).count()
-        return context
 
+        search_input = self.request.GET.get('search-area') or ''
+        if search_input:
+            context['tasks'] = context['tasks'].filter(
+                title__startswith=search_input)
+
+            context['search_input'] = search_input
+        return context
 
 
 class TaskDetail(LoginRequiredMixin, DetailView):
