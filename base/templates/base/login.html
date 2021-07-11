@@ -1,3 +1,5 @@
+{% extends 'base/main.html' %}
+{% block content %}
 <h1>Sign in</h1>
 
 <form method="post">
@@ -6,4 +8,5 @@
     <input type="submit" value="Sign in">
 </form>
 
-<p>Don't have an account? <a href="{% url 'sign-up' %}">Sign up</a></p>
+<p>Don't have an account? <a href="{% url 'sign-up' %}">Sign up!</a></p>
+{% endblock %}
